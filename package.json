@@ -13,13 +13,13 @@
     "./package.json": "./package.json"
   },
   "files": [
-    "dist",
-    "src",
-    "docs"
+    "dist/**/*.js",
+    "dist/**/*.d.ts"
   ],
   "scripts": {
     "build": "node -e \"fs.rmSync('dist',{recursive:true,force:true})\" && tsc -p .",
-    "prepack": "npm run build",
+    "build:release": "npm run build -- --sourceMap false --declarationMap false",
+    "prepack": "npm run build:release",
     "lint": "eslint",
     "pretest": "npm run build",
     "test": "mocha \"tests/**/*.mts\"",

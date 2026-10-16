@@ -1,6 +1,7 @@
 import { checkConstructor, createRule } from "../utils/common.js";
 
 export = createRule(
+  "jsx-no-new-function-as-prop",
   "Prevent `function` as JSX prop value",
   "JSX attribute values should not contain functions created in the same scope",
   (node) => {

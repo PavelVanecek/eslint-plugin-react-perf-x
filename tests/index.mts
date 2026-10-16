@@ -94,3 +94,17 @@ describe("configurations", () => {
     );
   });
 });
+
+describe("rule docs", () => {
+  for (const ruleName of ruleFiles) {
+    it(`${ruleName} should link to an existing docs page`, () => {
+      const rule = plugin.rules[ruleName as keyof typeof plugin.rules];
+      const docsPath = `docs/rules/${ruleName}.md`;
+      assert.equal(
+        rule.meta?.docs?.url,
+        `https://github.com/PavelVanecek/eslint-plugin-react-perf-x/blob/master/${docsPath}`
+      );
+      assert.ok(fs.existsSync(path.resolve(import.meta.dirname, "..", docsPath)));
+    });
+  }
+});

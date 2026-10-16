@@ -33,8 +33,8 @@ jobs:
       # Also builds dist/ via pretest, and checks the packed file list.
       - run: npm test
       - run: npm run lint:package
-      # --ignore-scripts: dist/ was just built and tested, don't rebuild it.
-      - run: npm pack --ignore-scripts
+      # prepack rebuilds dist/ without source maps.
+      - run: npm pack
       - uses: actions/upload-artifact@v7
         with:
           name: package
