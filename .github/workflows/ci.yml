@@ -33,7 +33,7 @@ jobs:
       matrix:
         node-version: [22, 24, 26]
         # Oldest and newest supported ESLint releases, see peerDependencies
-        eslint-version: ['9.0.0', '9']
+        eslint-version: ['9.0.0', '9', '10']
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
