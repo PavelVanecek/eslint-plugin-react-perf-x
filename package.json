@@ -1,5 +1,5 @@
 {
-  "name": "eslint-plugin-react-perf",
+  "name": "eslint-plugin-react-perf-x",
   "version": "3.3.3",
   "description": "Performance-minded React linting rules for ESLint",
   "main": "index.js",
@@ -20,11 +20,12 @@
   ],
   "author": "Charles Vazac <cvazac@gmail.com>",
   "contributors": [
-    "Valjean Clark III <valjeanbud@gmail.com>"
+    "Valjean Clark III <valjeanbud@gmail.com>",
+    "Pavel Vanecek <corkscreewe@gmail.com>"
   ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:cvazac/eslint-plugin-react-perf.git"
+    "url": "git@github.com:PavelVanecek/eslint-plugin-react-perf-x.git"
   },
   "license": "MIT",
   "devDependencies": {
