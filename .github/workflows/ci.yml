@@ -25,6 +25,7 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run typecheck
+      - run: npm run lint:package
 
   test:
     name: test (node ${{ matrix.node-version }}, eslint ${{ matrix.eslint-version }})
@@ -42,8 +43,11 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: npm
       - run: npm ci
+      # Build against the locked ESLint version, older ones may not ship types
+      - run: npm run build
       - run: npm install --no-save eslint@${{ matrix.eslint-version }}
-      - run: npm run test:coverage
+      # --ignore-scripts skips the pretest:coverage rebuild
+      - run: npm run test:coverage --ignore-scripts
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v7
         with:
