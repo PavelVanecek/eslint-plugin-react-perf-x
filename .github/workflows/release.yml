@@ -64,6 +64,7 @@ jobs:
         id: release-info
         env:
           RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_IS_PRERELEASE: ${{ github.event.release.prerelease }}
         run: |
           PACKAGE_VERSION="$(node -p "require('./package.json').version")"
           # Release tags look like v4.0.0 or v4.1.0-beta.0.
@@ -77,6 +78,22 @@ jobs:
           # publish one version while the GitHub release advertises another.
           if [ "$PACKAGE_VERSION" != "$RELEASE_VERSION" ]; then
             echo "Release tag ($RELEASE_TAG) does not match package.json version ($PACKAGE_VERSION)." >&2
+            exit 1
+          fi
+
+          # GitHub's "Set as a pre-release" checkbox must match the version, so a
+          # prerelease never shows as the "Latest" release and a stable release
+          # is never hidden as a prerelease. Build metadata (+...) is ignored.
+          VERSION_IS_PRERELEASE=false
+          if [[ "${PACKAGE_VERSION%%+*}" == *-* ]]; then
+            VERSION_IS_PRERELEASE=true
+          fi
+          if [ "$RELEASE_IS_PRERELEASE" != "$VERSION_IS_PRERELEASE" ]; then
+            if [ "$VERSION_IS_PRERELEASE" = true ]; then
+              echo "Version $PACKAGE_VERSION is a prerelease, but the GitHub release is not marked as a pre-release." >&2
+            else
+              echo "Version $PACKAGE_VERSION is stable, but the GitHub release is marked as a pre-release." >&2
+            fi
             exit 1
           fi
 
