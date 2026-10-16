@@ -8,7 +8,8 @@
     "test": "mocha tests/**/*.js",
     "test:debug": "mocha --inspect-brk tests/**/*.js",
     "test:watch": "mocha tests/**/*.js -w",
-    "test:coverage": "c8 --reporter=text --reporter=html --reporter=lcovonly --report-dir reports/coverage mocha tests/**/*.js"
+    "test:coverage": "c8 --reporter=text --reporter=html --reporter=lcovonly --report-dir reports/coverage mocha tests/**/*.js",
+    "typecheck": "tsc -p tests/types"
   },
   "keywords": [
     "react",
@@ -30,14 +31,16 @@
   "devDependencies": {
     "@eslint/js": "^9.39.5",
     "c8": "^12.0.0",
-    "eslint": "^9.12.0",
+    "eslint": "^9.39.5",
     "globals": "^14.0.0",
-    "mocha": "^12.0.3"
+    "mocha": "^12.0.3",
+    "typescript": "^5.9.3"
   },
   "peerDependencies": {
     "eslint": "^9.0.0 || ^10.0.0"
   },
   "engines": {
     "node": ">=22"
-  }
+  },
+  "types": "index.d.ts"
 }
