@@ -8,14 +8,21 @@ Performance-minded React linting rules for ESLint (motivated by [esamatti](https
 $ npm i eslint-plugin-react-perf
 ```
 
-Requires ESLint 9. Older ESLint versions are not supported or tested.
+Requires ESLint 9 or 10. Older ESLint versions are not supported or tested.
 
-Add `plugins` section and specify eslint-plugin-react-perf as a plugin.
+Add the plugin to your `eslint.config.js`:
 
-```json
-{
-  "plugins": ["react-perf"]
-}
+```js
+import reactPerfPlugin from 'eslint-plugin-react-perf';
+
+export default [
+  {
+    plugins: { 'react-perf': reactPerfPlugin },
+    rules: {
+      'react-perf/jsx-no-new-object-as-prop': 'error'
+    }
+  }
+];
 ```
 
 # List of supported rules
@@ -59,65 +66,48 @@ With this configuration, the "style" attribute is ignored for native elements fo
 
 This plugin exports a `recommended` configuration that enforce React good practices.
 
-### Flat configuration
-
 To enable this configuration add the following to your eslint.config.js:
 ```js
 import reactPerfPlugin from 'eslint-plugin-react-perf';
 
-const config = [
-  reactPerfPlugin.configs.flat.recommended
+export default [
+  reactPerfPlugin.configs.recommended
 ];
-
-export default config;
 ```
-
-### eslintrc configuration
-
-To enable this configuration use the `extends` property in your `.eslintrc` config file:
-
-```js
-{
-  "extends": ["plugin:react-perf/recommended"]
-}
-```
-
-See [ESLint documentation](http://eslint.org/docs/user-guide/configuring#extending-configuration-files) for more information about extending configuration files.
 
 The rules enabled in this configuration are:
 
 - [react-perf/jsx-no-new-object-as-prop](docs/rules/jsx-no-new-object-as-prop.md)
 - [react-perf/jsx-no-new-array-as-prop](docs/rules/jsx-no-new-array-as-prop.md)
 - [react-perf/jsx-no-new-function-as-prop](docs/rules/jsx-no-new-function-as-prop.md)
-- [react-perf/jsx-no-jsx-as-prop](docs/rules/jsx-no-jsx-as-prop.md)
 
 ## All
 
 This plugin also exports an `all` configuration that includes every available rule.
 
-### Flat configuration
-
-To enable this configuration add the following to your eslint.config.js:
 ```js
 import reactPerfPlugin from 'eslint-plugin-react-perf';
 
-const config = [
-  reactPerfPlugin.configs.flat.all
+export default [
+  reactPerfPlugin.configs.all
 ];
-
-export default config;
 ```
 
-### eslintrc configuration
+`configs.flat.recommended` and `configs.flat.all` are still exported as aliases of the configurations above.
 
-```js
+## eslintrc (legacy) configuration
+
+ESLint 10 removed support for `.eslintrc` files. If you still use ESLint 9 with `ESLINT_USE_FLAT_CONFIG=false`, use the `legacy-` configurations:
+
+```json
 {
-  "plugins": [
-    "react-perf"
-  ],
-  "extends": ["plugin:react-perf/all"]
+  "extends": ["plugin:react-perf/legacy-recommended"]
 }
 ```
+
+or `plugin:react-perf/legacy-all` for every rule.
+
+See [ESLint documentation](https://eslint.org/docs/latest/use/configure/migration-guide) for migrating to flat config.
 
 # Test anti-patterns in runtime
 

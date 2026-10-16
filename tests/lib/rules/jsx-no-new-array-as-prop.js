@@ -9,8 +9,7 @@ var invalidArrayExpressions = [
     errors: [
       {
         line,
-        column,
-        type: "ArrayExpression"
+        column
       }
     ]
   };
@@ -25,8 +24,7 @@ var invalidNewExpressions = [
     errors: [
       {
         line,
-        column,
-        type: "NewExpression"
+        column
       }
     ]
   };
@@ -40,8 +38,7 @@ var invalidCallExpressions = [
     errors: [
       {
         line,
-        column,
-        type: "CallExpression"
+        column
       }
     ]
   };
@@ -52,7 +49,6 @@ module.exports = testRule(
   "jsx-no-new-array-as-prop",
   "JSX attribute values should not contain Arrays created in the same scope",
   "[]",
-  "ArrayExpression",
   [].concat(
     invalidArrayExpressions,
     invalidNewExpressions,

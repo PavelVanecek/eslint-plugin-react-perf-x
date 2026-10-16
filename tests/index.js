@@ -1,9 +1,9 @@
-/* eslint-env mocha */
 "use strict";
 
 var plugin = require("..");
 
 var assert = require("assert");
+var Linter = require("eslint").Linter;
 var fs = require("fs");
 var path = require("path");
 
@@ -24,26 +24,58 @@ describe("all rule files should be exported by the plugin", function() {
   });
 });
 
+function assertAllRulesAsError(rules) {
+  Object.keys(rules).forEach(function(configName) {
+    assert.equal(configName.indexOf("react-perf/"), 0);
+    assert.equal(rules[configName], 2);
+  });
+  ruleFiles.forEach(function(ruleName) {
+    assert(Boolean(rules["react-perf/" + ruleName]));
+  });
+}
+
 describe("configurations", function() {
-  it("should export a 'all' configuration", function() {
-    assert(plugin.configs.all);
-    Object.keys(plugin.configs.all.rules).forEach(function(configName) {
-      assert.equal(configName.indexOf("react-perf/"), 0);
-      assert.equal(plugin.configs.all.rules[configName], 2);
-    });
-    ruleFiles.forEach(function(ruleName) {
-      assert(Boolean(plugin.configs.all.rules["react-perf/" + ruleName]));
-    });
+  it("should export a flat 'all' configuration", function() {
+    assert.equal(plugin.configs.all.plugins["react-perf"], plugin);
+    assertAllRulesAsError(plugin.configs.all.rules);
   });
 
-  it("should export a flat 'all' configuration", function() {
-    assert(plugin.configs.flat.all);
-    Object.keys(plugin.configs.flat.all.rules).forEach(function(configName) {
-      assert.equal(configName.indexOf("react-perf/"), 0);
-      assert.equal(plugin.configs.flat.all.rules[configName], 2);
-    });
-    ruleFiles.forEach(function(ruleName) {
-      assert(Boolean(plugin.configs.flat.all.rules["react-perf/" + ruleName]));
+  it("should export a flat 'recommended' configuration", function() {
+    assert.equal(plugin.configs.recommended.plugins["react-perf"], plugin);
+    assert.equal(
+      plugin.configs.recommended.languageOptions.parserOptions.ecmaFeatures.jsx,
+      true
+    );
+  });
+
+  it("should keep configs.flat as aliases", function() {
+    assert.equal(plugin.configs.flat.all, plugin.configs.all);
+    assert.equal(plugin.configs.flat.recommended, plugin.configs.recommended);
+  });
+
+  it("should export eslintrc 'legacy-*' configurations", function() {
+    assert.deepEqual(plugin.configs["legacy-all"].plugins, ["react-perf"]);
+    assertAllRulesAsError(plugin.configs["legacy-all"].rules);
+    assert.deepEqual(
+      plugin.configs["legacy-recommended"].rules,
+      plugin.configs.recommended.rules
+    );
+  });
+
+  ["recommended", "all"].forEach(function(configName) {
+    it("should lint with the flat '" + configName + "' configuration", function() {
+      var linter = new Linter();
+      var messages = linter.verify(
+        "<Item prop={{}} />",
+        [plugin.configs[configName]],
+        "test.js"
+      );
+      assert.deepEqual(
+        messages.map(function(message) {
+          return message.ruleId;
+        }),
+        ["react-perf/jsx-no-new-object-as-prop"]
+      );
     });
   });
 });
