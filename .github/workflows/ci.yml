@@ -26,12 +26,14 @@ jobs:
       - run: npm run lint
 
   test:
-    name: test (node ${{ matrix.node-version }})
+    name: test (node ${{ matrix.node-version }}, eslint ${{ matrix.eslint-version }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         node-version: [22, 24, 26]
+        # Oldest and newest supported ESLint releases, see peerDependencies
+        eslint-version: ['9.0.0', '9']
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -39,6 +41,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: npm
       - run: npm ci
+      - run: npm install --no-save eslint@${{ matrix.eslint-version }}
       - run: npm run test:coverage
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v7

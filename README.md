@@ -8,6 +8,8 @@ Performance-minded React linting rules for ESLint (motivated by [esamatti](https
 $ npm i eslint-plugin-react-perf
 ```
 
+Requires ESLint 9. Older ESLint versions are not supported or tested.
+
 Add `plugins` section and specify eslint-plugin-react-perf as a plugin.
 
 ```json
