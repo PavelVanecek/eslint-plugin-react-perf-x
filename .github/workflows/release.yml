@@ -83,9 +83,11 @@ jobs:
 
           # GitHub's "Set as a pre-release" checkbox must match the version, so a
           # prerelease never shows as the "Latest" release and a stable release
-          # is never hidden as a prerelease. Build metadata (+...) is ignored.
+          # is never hidden as a prerelease. Build metadata (+...) is ignored, here
+          # and when picking the dist-tag below.
+          VERSION_WITHOUT_BUILD="${PACKAGE_VERSION%%+*}"
           VERSION_IS_PRERELEASE=false
-          if [[ "${PACKAGE_VERSION%%+*}" == *-* ]]; then
+          if [[ "$VERSION_WITHOUT_BUILD" == *-* ]]; then
             VERSION_IS_PRERELEASE=true
           fi
           if [ "$RELEASE_IS_PRERELEASE" != "$VERSION_IS_PRERELEASE" ]; then
@@ -100,8 +102,9 @@ jobs:
           # Stable versions go to "latest". Prereleases like 4.1.0-beta.0 go to
           # a dist-tag named after the first prerelease identifier ("beta").
           NPM_TAG=latest
-          if [[ "$PACKAGE_VERSION" =~ -([0-9A-Za-z]+)(\.[0-9A-Za-z.-]+)?$ ]]; then
-            NPM_TAG="${BASH_REMATCH[1]}"
+          if [ "$VERSION_IS_PRERELEASE" = true ]; then
+            PRERELEASE="${VERSION_WITHOUT_BUILD#*-}"
+            NPM_TAG="${PRERELEASE%%.*}"
           fi
 
           echo "npm_tag=$NPM_TAG" >> "$GITHUB_OUTPUT"
