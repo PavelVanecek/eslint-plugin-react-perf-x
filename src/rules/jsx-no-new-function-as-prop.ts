@@ -1,8 +1,6 @@
-"use strict";
+import { checkConstructor, createRule } from "../utils/common.js";
 
-const { checkConstructor, createRule } = require("../utils/common");
-
-module.exports = createRule(
+export = createRule(
   "Prevent `function` as JSX prop value",
   "JSX attribute values should not contain functions created in the same scope",
   (node) => {
@@ -17,7 +15,8 @@ module.exports = createRule(
     // <Item onClick={this.clickHandler.bind(this)} />
     if (
       node.type === "CallExpression" &&
-      node.callee.property &&
+      node.callee.type === "MemberExpression" &&
+      node.callee.property.type === "Identifier" &&
       node.callee.property.name === "bind"
     ) {
       return true;

@@ -2,14 +2,34 @@
   "name": "eslint-plugin-react-perf-x",
   "version": "3.3.3",
   "description": "Performance-minded React linting rules for ESLint",
-  "main": "index.js",
+  "type": "commonjs",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "src",
+    "docs"
+  ],
   "scripts": {
+    "build": "node -e \"fs.rmSync('dist',{recursive:true,force:true})\" && tsc -p .",
+    "prepack": "npm run build",
     "lint": "eslint",
-    "test": "mocha tests/**/*.js",
-    "test:debug": "mocha --inspect-brk tests/**/*.js",
-    "test:watch": "mocha tests/**/*.js -w",
-    "test:coverage": "c8 --reporter=text --reporter=html --reporter=lcovonly --report-dir reports/coverage mocha tests/**/*.js",
-    "typecheck": "tsc -p tests/types"
+    "pretest": "npm run build",
+    "test": "mocha \"tests/**/*.mts\"",
+    "test:debug": "mocha --inspect-brk \"tests/**/*.mts\"",
+    "test:watch": "mocha \"tests/**/*.mts\" -w",
+    "pretest:coverage": "npm run build",
+    "test:coverage": "c8 --reporter=text --reporter=html --reporter=lcovonly --report-dir reports/coverage --include \"src/**\" --include \"dist/**\" mocha \"tests/**/*.mts\"",
+    "pretypecheck": "npm run build",
+    "typecheck": "tsc -p tests && tsc -p tests/types",
+    "lint:package": "publint --strict && attw --pack . --profile node16"
   },
   "keywords": [
     "react",
@@ -25,22 +45,26 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:PavelVanecek/eslint-plugin-react-perf-x.git"
+    "url": "git+ssh://git@github.com/PavelVanecek/eslint-plugin-react-perf-x.git"
   },
   "license": "MIT",
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
     "@eslint/js": "^9.39.5",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.20.5",
     "c8": "^12.0.0",
     "eslint": "^9.39.5",
     "globals": "^14.0.0",
     "mocha": "^12.0.3",
-    "typescript": "^5.9.3"
+    "publint": "^0.3.25",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.71.2"
   },
   "peerDependencies": {
     "eslint": "^9.0.0 || ^10.0.0"
   },
   "engines": {
     "node": ">=22"
-  },
-  "types": "index.d.ts"
+  }
 }

@@ -1,8 +1,6 @@
-"use strict";
+import { checkConstructor, createRule } from "../utils/common.js";
 
-const { checkConstructor, createRule } = require("../utils/common");
-
-module.exports = createRule(
+export = createRule(
   "Prevent [...] as JSX prop value",
   "JSX attribute values should not contain Arrays created in the same scope",
   (node) => {

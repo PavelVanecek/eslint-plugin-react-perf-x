@@ -1,25 +1,34 @@
-"use strict";
+import { RuleTester, type Rule } from "eslint";
 
-function testRule(
-  path,
-  ruleName,
-  errorMessage,
-  ruleCode,
-  invalid,
-  valid
-) {
-  var rule = require(path);
-  var RuleTester = require("eslint").RuleTester;
+export interface InvalidCase {
+  code: string;
+  options?: unknown[];
+  line: number;
+  column: number;
+}
 
-  var languageOptions = {
-    parserOptions: {
-      ecmaFeatures: {
-        jsx: true,
-      },
-    }
-  };
+export interface ValidCase {
+  code: string;
+  options?: unknown[];
+}
 
-  invalid = [
+const languageOptions = {
+  parserOptions: {
+    ecmaFeatures: {
+      jsx: true,
+    },
+  },
+};
+
+export function testRule(
+  rule: Rule.RuleModule,
+  ruleName: string,
+  errorMessage: string,
+  ruleCode: string,
+  invalid: InvalidCase[],
+  valid: ValidCase[] = []
+): void {
+  const allInvalid: InvalidCase[] = [
     { code: `<div style={${ruleCode}} />`, line: 1, column: 13 },
     {
       code: `<div style={${ruleCode}} />`,
@@ -64,22 +73,10 @@ function testRule(
       line: 1,
       column: 10,
     },
-  ]
-    .map(function ({ code, options = [], line, column }) {
-      return {
-        code,
-        options,
-        errors: [
-          {
-            line,
-            column,
-          },
-        ],
-      };
-    })
-    .concat(invalid);
+    ...invalid,
+  ];
 
-  valid = [
+  const allValid: ValidCase[] = [
     {
       code: `<div style={${ruleCode}} />`,
       options: [{ nativeAllowList: "all" }],
@@ -89,6 +86,7 @@ function testRule(
       options: [{ nativeAllowList: ["style"] }],
     },
     { code: "<Item prop={0} />" },
+    { code: "<Item prop=\"foo\" />" },
     { code: "var a;<Item prop={a} />" },
     { code: "var a;a = 1;<Item prop={a} />" },
     { code: "var a;a = a;<Item prop={a} />" },
@@ -113,24 +111,20 @@ function testRule(
       return <Comp prop={prop2} />
     }`,
     },
-  ].concat(valid || []);
+    ...valid,
+  ];
 
   new RuleTester().run(ruleName, rule, {
-    valid: valid.map(({ code, options = [] }) => {
-      return {
-        code,
-        options,
-        languageOptions,
-      };
-    }),
-    invalid: invalid.map((e) => {
-      e.languageOptions = languageOptions;
-      e.errors = e.errors.map(errors => ({ ...errors, message: errorMessage }))
-      return e;
-    }),
+    valid: allValid.map(({ code, options = [] }) => ({
+      code,
+      options,
+      languageOptions,
+    })),
+    invalid: allInvalid.map(({ code, options = [], line, column }) => ({
+      code,
+      options,
+      languageOptions,
+      errors: [{ line, column, message: errorMessage }],
+    })),
   });
 }
-
-module.exports = {
-  testRule,
-};

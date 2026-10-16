@@ -1,11 +1,50 @@
-"use strict";
+import type { Rule } from "eslint";
+import type * as ESTree from "estree";
 
-function createRule(description, errorMessage, isViolation) {
+// @types/estree has no JSX nodes, so describe the parts the rules look at.
+interface JSXIdentifier {
+  type: "JSXIdentifier";
+  name: string;
+}
+
+interface JSXNamespacedName {
+  type: "JSXNamespacedName";
+  namespace: JSXIdentifier;
+  name: JSXIdentifier;
+}
+
+interface JSXOpeningElement {
+  type: "JSXOpeningElement";
+  name: JSXIdentifier | JSXNamespacedName | { type: "JSXMemberExpression" };
+}
+
+interface JSXAttribute {
+  type: "JSXAttribute";
+  name: JSXIdentifier | JSXNamespacedName;
+  value:
+    | { type: "JSXExpressionContainer"; expression: ESTree.Expression }
+    | { type: string }
+    | null;
+  parent: JSXOpeningElement;
+}
+
+export type SyntaxNode =
+  | ESTree.Node
+  | { type: "JSXElement" | "JSXFragment"; loc?: ESTree.SourceLocation | null };
+
+interface RuleOptions {
+  nativeAllowList?: "all" | string[];
+}
+
+export function createRule(
+  description: string,
+  errorMessage: string,
+  isViolation: (node: SyntaxNode) => boolean
+): Rule.RuleModule {
   return {
     meta: {
       docs: {
         description,
-        category: "",
         recommended: true,
       },
       schema: [
@@ -32,19 +71,20 @@ function createRule(description, errorMessage, isViolation) {
     },
 
     create(context) {
-      const { nativeAllowList } = context.options[0] || {};
+      const { nativeAllowList }: RuleOptions = context.options[0] || {};
 
-      const isAllowedNative = (node) =>
+      const isAllowedNative = (node: JSXAttribute) =>
         nativeAllowList === "all" ||
         (Array.isArray(nativeAllowList) &&
           nativeAllowList.some(
             (nativeExclude) =>
-              node.name.name.toLowerCase() === nativeExclude.toLowerCase()
+              attributeName(node).toLowerCase() === nativeExclude.toLowerCase()
           ));
 
       return {
-        JSXAttribute(node) {
-          if (!node.value || node.value.type !== "JSXExpressionContainer") {
+        JSXAttribute(ruleNode: Rule.Node) {
+          const node = ruleNode as unknown as JSXAttribute;
+          if (!node.value || !("expression" in node.value)) {
             return;
           }
           if (isNativeElement(node) && isAllowedNative(node)) {
@@ -56,7 +96,10 @@ function createRule(description, errorMessage, isViolation) {
             node.value.expression
           )) {
             if (isViolation(relevantNode)) {
-              context.report(relevantNode, errorMessage);
+              context.report({
+                node: relevantNode as ESTree.Node,
+                message: errorMessage,
+              });
             }
           }
         },
@@ -65,10 +108,13 @@ function createRule(description, errorMessage, isViolation) {
   };
 }
 
-function findRelevantNodes(context, node) {
-  const nodes = [];
+function findRelevantNodes(
+  context: Rule.RuleContext,
+  node: ESTree.Node
+): SyntaxNode[] {
+  const nodes: SyntaxNode[] = [];
 
-  const visit = (node) => {
+  const visit = (node: ESTree.Node) => {
     if (node.type === "Literal") {
       // we have found a Literal (ex. 'foo', 1, false), bail
       return;
@@ -80,7 +126,7 @@ function findRelevantNodes(context, node) {
         return;
       }
       for (const { identifier } of variable.references) {
-        const { parent } = identifier;
+        const { parent } = identifier as Rule.Node;
         if (!parent) continue;
         switch (parent.type) {
           case "AssignmentExpression":
@@ -88,7 +134,7 @@ function findRelevantNodes(context, node) {
             nodes.push(parent.right);
             break;
           case "VariableDeclarator":
-            nodes.push(parent.init);
+            if (parent.init) nodes.push(parent.init);
             break;
         }
       }
@@ -112,15 +158,21 @@ function findRelevantNodes(context, node) {
   return nodes;
 }
 
-function checkConstructor(node, className) {
+export function checkConstructor(node: SyntaxNode, className: string): boolean {
   return (
-    Boolean(node.callee) &&
-    node.callee.name === className &&
-    (node.type === "NewExpression" || node.type === "CallExpression")
+    (node.type === "NewExpression" || node.type === "CallExpression") &&
+    node.callee.type === "Identifier" &&
+    node.callee.name === className
   );
 }
 
-function isNativeElement(node) {
+function attributeName(node: JSXAttribute): string {
+  return node.name.type === "JSXIdentifier"
+    ? node.name.name
+    : `${node.name.namespace.name}:${node.name.name.name}`;
+}
+
+function isNativeElement(node: JSXAttribute): boolean {
   if (node.parent.name.type !== "JSXIdentifier") {
     return false;
   }
@@ -128,8 +180,3 @@ function isNativeElement(node) {
   const firstChar = nodeName.charAt(0);
   return firstChar === firstChar.toLowerCase();
 }
-
-module.exports = {
-  createRule,
-  checkConstructor,
-};

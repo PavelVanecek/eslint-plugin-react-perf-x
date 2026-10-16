@@ -1,6 +1,6 @@
 import type { Linter } from "eslint";
 import { defineConfig } from "eslint/config";
-import reactPerf = require("../..");
+import reactPerf = require("eslint-plugin-react-perf-x");
 
 const configs: Linter.Config[] = [
   reactPerf.configs.recommended,
