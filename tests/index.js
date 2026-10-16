@@ -53,13 +53,14 @@ describe("configurations", function() {
     assert.equal(plugin.configs.flat.recommended, plugin.configs.recommended);
   });
 
-  it("should export eslintrc 'legacy-*' configurations", function() {
-    assert.deepEqual(plugin.configs["legacy-all"].plugins, ["react-perf"]);
-    assertAllRulesAsError(plugin.configs["legacy-all"].rules);
-    assert.deepEqual(
-      plugin.configs["legacy-recommended"].rules,
-      plugin.configs.recommended.rules
-    );
+  it("should not export eslintrc configurations", function() {
+    Object.keys(plugin.configs)
+      .filter(function(configName) {
+        return configName !== "flat";
+      })
+      .forEach(function(configName) {
+        assert.equal(Array.isArray(plugin.configs[configName].plugins), false);
+      });
   });
 
   ["recommended", "all"].forEach(function(configName) {
@@ -77,5 +78,25 @@ describe("configurations", function() {
         ["react-perf/jsx-no-new-object-as-prop"]
       );
     });
+  });
+
+  it("should rename rules to the user's namespace with defineConfig", function() {
+    var defineConfig;
+    try {
+      defineConfig = require("eslint/config").defineConfig;
+    } catch {
+      // eslint/config was added in ESLint 9.22
+      this.skip();
+    }
+    var config = defineConfig([
+      { plugins: { perf: plugin }, extends: ["perf/recommended"] }
+    ]);
+    var messages = new Linter().verify("<Item prop={{}} />", config, "test.js");
+    assert.deepEqual(
+      messages.map(function(message) {
+        return message.ruleId;
+      }),
+      ["perf/jsx-no-new-object-as-prop"]
+    );
   });
 });

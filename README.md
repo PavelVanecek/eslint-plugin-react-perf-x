@@ -93,21 +93,26 @@ export default [
 ];
 ```
 
-`configs.flat.recommended` and `configs.flat.all` are still exported as aliases of the configurations above.
+`configs.flat.recommended` and `configs.flat.all` are also exported as aliases of the configurations above, for drop-in compatibility with eslint-plugin-react-perf.
 
-## eslintrc (legacy) configuration
+With `defineConfig`, you can also register the plugin under another name and extend its configurations by string; the rule IDs follow your name:
 
-ESLint 10 removed support for `.eslintrc` files. If you still use ESLint 9 with `ESLINT_USE_FLAT_CONFIG=false`, use the `legacy-` configurations:
+```js
+import { defineConfig } from 'eslint/config';
+import reactPerfPlugin from 'eslint-plugin-react-perf';
 
-```json
-{
-  "extends": ["plugin:react-perf/legacy-recommended"]
-}
+export default defineConfig([
+  {
+    plugins: { perf: reactPerfPlugin },
+    extends: ['perf/recommended'],
+    rules: { 'perf/jsx-no-jsx-as-prop': 'error' }
+  }
+]);
 ```
 
-or `plugin:react-perf/legacy-all` for every rule.
+## eslintrc
 
-See [ESLint documentation](https://eslint.org/docs/latest/use/configure/migration-guide) for migrating to flat config.
+`.eslintrc` files are not supported. Use flat config (`eslint.config.js`); see the [ESLint migration guide](https://eslint.org/docs/latest/use/configure/migration-guide).
 
 # Test anti-patterns in runtime
 

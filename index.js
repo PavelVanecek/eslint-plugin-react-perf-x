@@ -37,7 +37,8 @@ var allRulesAsError = configureAsError(allRules);
 var plugin = {
   meta: {
     name: pkg.name,
-    version: pkg.version
+    version: pkg.version,
+    namespace: "react-perf"
   },
   rules: allRules,
   configs: {}
@@ -52,23 +53,11 @@ function flatConfig(name, rules) {
   };
 }
 
-function legacyConfig(rules) {
-  return {
-    plugins: ["react-perf"],
-    parserOptions: parserOptions,
-    rules: rules
-  };
-}
-
 plugin.configs.recommended = flatConfig("recommended", recommendedRules);
 plugin.configs.all = flatConfig("all", allRulesAsError);
 
-// eslintrc configs, for ESLint 9 with ESLINT_USE_FLAT_CONFIG=false.
-// ESLint 10 no longer supports eslintrc.
-plugin.configs["legacy-recommended"] = legacyConfig(recommendedRules);
-plugin.configs["legacy-all"] = legacyConfig(allRulesAsError);
-
-// Kept for backwards compatibility; same as configs.recommended / configs.all.
+// Same as configs.recommended / configs.all, for drop-in compatibility with
+// eslint-plugin-react-perf, which only exported configs.flat.*.
 plugin.configs.flat = {
   recommended: plugin.configs.recommended,
   all: plugin.configs.all
