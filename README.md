@@ -110,6 +110,10 @@ export default defineConfig([
 ]);
 ```
 
+## TypeScript
+
+The package ships type definitions (`index.d.ts`), so the plugin and its configurations typecheck in `eslint.config.ts`.
+
 ## eslintrc
 
 `.eslintrc` files are not supported. Use flat config (`eslint.config.js`); see the [ESLint migration guide](https://eslint.org/docs/latest/use/configure/migration-guide).

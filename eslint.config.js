@@ -14,6 +14,17 @@ const config = [
     },
   },
   {
+    files: ["index.js", "lib/**/*.js"],
+    rules: {
+      "no-var": "error",
+      "prefer-const": "error",
+      "prefer-arrow-callback": "error",
+      "object-shorthand": "error",
+      "prefer-template": "error",
+      eqeqeq: "error"
+    }
+  },
+  {
     files: ["tests/**/*.js"],
     languageOptions: {
       globals: {
