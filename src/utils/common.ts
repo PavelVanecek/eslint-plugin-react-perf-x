@@ -37,6 +37,7 @@ interface RuleOptions {
 }
 
 export function createRule(
+  name: string,
   description: string,
   errorMessage: string,
   isViolation: (node: SyntaxNode) => boolean
@@ -46,6 +47,7 @@ export function createRule(
       docs: {
         description,
         recommended: true,
+        url: `https://github.com/PavelVanecek/eslint-plugin-react-perf-x/blob/master/docs/rules/${name}.md`,
       },
       schema: [
         {

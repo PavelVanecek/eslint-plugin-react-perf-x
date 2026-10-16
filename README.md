@@ -1,19 +1,28 @@
-# eslint-plugin-react-perf
+# eslint-plugin-react-perf-x
+
+[![CI](https://github.com/PavelVanecek/eslint-plugin-react-perf-x/actions/workflows/ci.yml/badge.svg)](https://github.com/PavelVanecek/eslint-plugin-react-perf-x/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/eslint-plugin-react-perf-x)](https://www.npmjs.com/package/eslint-plugin-react-perf-x)
 
 Performance-minded React linting rules for ESLint (motivated by [esamatti](https://twitter.com/esamatti)'s post ["React.js pure render performance anti-pattern"](https://medium.com/@esamatti/react-js-pure-render-performance-anti-pattern-fb88c101332f)).
+
+This is a maintained fork of [eslint-plugin-react-perf](https://github.com/cvazac/eslint-plugin-react-perf) by Charles Vazac and contributors. It keeps the same rules and rule IDs (`react-perf/*`), and targets current ESLint: flat config only, ESLint 9 and 10, and bundled TypeScript types. See the [GitHub releases](https://github.com/PavelVanecek/eslint-plugin-react-perf-x/releases) for what changed compared to the original.
 
 # Installation
 
 ```sh
-$ npm i eslint-plugin-react-perf
+npm i -D eslint-plugin-react-perf-x
 ```
 
-Requires ESLint 9 or 10. Older ESLint versions are not supported or tested.
+| Requirement | Supported versions |
+| ----------- | ------------------ |
+| ESLint      | 9, 10              |
+| Node.js     | 22 or newer        |
+| Config      | flat config only   |
 
 Add the plugin to your `eslint.config.js`:
 
 ```js
-import reactPerfPlugin from 'eslint-plugin-react-perf';
+import reactPerfPlugin from 'eslint-plugin-react-perf-x';
 
 export default [
   {
@@ -23,6 +32,20 @@ export default [
     }
   }
 ];
+```
+
+## Migrating from eslint-plugin-react-perf
+
+Swap the package and the import. Rule IDs, rule options and the `configs.flat.*` aliases are the same:
+
+```sh
+npm rm eslint-plugin-react-perf
+npm i -D eslint-plugin-react-perf-x
+```
+
+```diff
+-import reactPerfPlugin from 'eslint-plugin-react-perf';
++import reactPerfPlugin from 'eslint-plugin-react-perf-x';
 ```
 
 # List of supported rules
@@ -68,7 +91,7 @@ This plugin exports a `recommended` configuration that enforce React good practi
 
 To enable this configuration add the following to your eslint.config.js:
 ```js
-import reactPerfPlugin from 'eslint-plugin-react-perf';
+import reactPerfPlugin from 'eslint-plugin-react-perf-x';
 
 export default [
   reactPerfPlugin.configs.recommended
@@ -86,7 +109,7 @@ The rules enabled in this configuration are:
 This plugin also exports an `all` configuration that includes every available rule.
 
 ```js
-import reactPerfPlugin from 'eslint-plugin-react-perf';
+import reactPerfPlugin from 'eslint-plugin-react-perf-x';
 
 export default [
   reactPerfPlugin.configs.all
@@ -99,7 +122,7 @@ With `defineConfig`, you can also register the plugin under another name and ext
 
 ```js
 import { defineConfig } from 'eslint/config';
-import reactPerfPlugin from 'eslint-plugin-react-perf';
+import reactPerfPlugin from 'eslint-plugin-react-perf-x';
 
 export default defineConfig([
   {
@@ -112,7 +135,7 @@ export default defineConfig([
 
 ## TypeScript
 
-The package ships type definitions (`index.d.ts`), so the plugin and its configurations typecheck in `eslint.config.ts`.
+The package ships type definitions, so the plugin and its configurations typecheck in `eslint.config.ts`.
 
 ## eslintrc
 
@@ -122,6 +145,10 @@ The package ships type definitions (`index.d.ts`), so the plugin and its configu
 
 Try out [cvazac/test-ref-pattern](https://github.com/cvazac/test-ref-pattern).
 
+# Credits
+
+The rules were written by [Charles Vazac](https://github.com/cvazac), [Valjean Clark](https://github.com/vbud) and the contributors of [eslint-plugin-react-perf](https://github.com/cvazac/eslint-plugin-react-perf).
+
 # License
 
-eslint-plugin-react-perf is licensed under the [MIT License](http://www.opensource.org/licenses/mit-license.php).
+eslint-plugin-react-perf-x is licensed under the [MIT License](LICENSE).

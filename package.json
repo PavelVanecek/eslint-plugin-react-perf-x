@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-react-perf-x",
-  "version": "3.3.3",
+  "version": "4.0.0-alpha.0",
   "description": "Performance-minded React linting rules for ESLint",
   "type": "commonjs",
   "main": "./dist/index.js",
@@ -13,13 +13,13 @@
     "./package.json": "./package.json"
   },
   "files": [
-    "dist",
-    "src",
-    "docs"
+    "dist/**/*.js",
+    "dist/**/*.d.ts"
   ],
   "scripts": {
     "build": "node -e \"fs.rmSync('dist',{recursive:true,force:true})\" && tsc -p .",
-    "prepack": "npm run build",
+    "build:release": "npm run build -- --sourceMap false --declarationMap false",
+    "prepack": "npm run build:release",
     "lint": "eslint",
     "pretest": "npm run build",
     "test": "mocha \"tests/**/*.mts\"",

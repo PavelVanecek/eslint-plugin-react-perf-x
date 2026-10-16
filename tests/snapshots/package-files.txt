@@ -1,0 +1,15 @@
+LICENSE
+README.md
+dist/index.d.ts
+dist/index.js
+dist/rules/jsx-no-jsx-as-prop.d.ts
+dist/rules/jsx-no-jsx-as-prop.js
+dist/rules/jsx-no-new-array-as-prop.d.ts
+dist/rules/jsx-no-new-array-as-prop.js
+dist/rules/jsx-no-new-function-as-prop.d.ts
+dist/rules/jsx-no-new-function-as-prop.js
+dist/rules/jsx-no-new-object-as-prop.d.ts
+dist/rules/jsx-no-new-object-as-prop.js
+dist/utils/common.d.ts
+dist/utils/common.js
+package.json
