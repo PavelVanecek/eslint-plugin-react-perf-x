@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-react-perf-x",
-  "version": "4.0.0-alpha.1",
+  "version": "4.0.0",
   "description": "Performance-minded React linting rules for ESLint",
   "type": "commonjs",
   "main": "./dist/index.js",
