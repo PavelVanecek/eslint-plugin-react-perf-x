@@ -36,76 +36,67 @@ interface RuleOptions {
   nativeAllowList?: "all" | string[];
 }
 
-export function createRule(
-  name: string,
-  description: string,
-  errorMessage: string,
-  isViolation: (node: SyntaxNode) => boolean
-): Rule.RuleModule {
-  return {
-    meta: {
-      docs: {
-        description,
-        recommended: true,
-        url: `https://github.com/PavelVanecek/eslint-plugin-react-perf-x/blob/master/docs/rules/${name}.md`,
-      },
-      schema: [
-        {
-          additionalProperties: false,
-          properties: {
-            nativeAllowList: {
-              oneOf: [
-                {
-                  enum: ["all"],
-                },
-                {
-                  type: "array",
-                  items: {
-                    type: "string",
-                  },
-                },
-              ],
+export const docsUrl = (name: string): string =>
+  `https://github.com/PavelVanecek/eslint-plugin-react-perf-x/blob/master/docs/rules/${name}.md`;
+
+export const schema: Rule.RuleMetaData["schema"] = [
+  {
+    additionalProperties: false,
+    properties: {
+      nativeAllowList: {
+        oneOf: [
+          {
+            enum: ["all"],
+          },
+          {
+            type: "array",
+            items: {
+              type: "string",
             },
           },
-          type: "object",
-        },
-      ],
+        ],
+      },
     },
+    type: "object",
+  },
+];
 
-    create(context) {
-      const { nativeAllowList }: RuleOptions = context.options[0] || {};
+export function createVisitor(
+  context: Rule.RuleContext,
+  messageId: string,
+  isViolation: (node: SyntaxNode) => boolean
+): Rule.RuleListener {
+  const { nativeAllowList }: RuleOptions = context.options[0] || {};
 
-      const isAllowedNative = (node: JSXAttribute) =>
-        nativeAllowList === "all" ||
-        (Array.isArray(nativeAllowList) &&
-          nativeAllowList.some(
-            (nativeExclude) =>
-              attributeName(node).toLowerCase() === nativeExclude.toLowerCase()
-          ));
+  const isAllowedNative = (node: JSXAttribute) =>
+    nativeAllowList === "all" ||
+    (Array.isArray(nativeAllowList) &&
+      nativeAllowList.some(
+        (nativeExclude) =>
+          attributeName(node).toLowerCase() === nativeExclude.toLowerCase()
+      ));
 
-      return {
-        JSXAttribute(ruleNode: Rule.Node) {
-          const node = ruleNode as unknown as JSXAttribute;
-          if (!node.value || !("expression" in node.value)) {
-            return;
-          }
-          if (isNativeElement(node) && isAllowedNative(node)) {
-            return;
-          }
+  return {
+    JSXAttribute(ruleNode: Rule.Node) {
+      const node = ruleNode as unknown as JSXAttribute;
+      if (!node.value || !("expression" in node.value)) {
+        return;
+      }
+      if (isNativeElement(node) && isAllowedNative(node)) {
+        return;
+      }
 
-          for (const relevantNode of findRelevantNodes(
-            context,
-            node.value.expression
-          )) {
-            if (isViolation(relevantNode)) {
-              context.report({
-                node: relevantNode as ESTree.Node,
-                message: errorMessage,
-              });
-            }
-          }
-        },
-      };
+      for (const relevantNode of findRelevantNodes(
+        context,
+        node.value.expression
+      )) {
+        if (isViolation(relevantNode)) {
+          context.report({
+            node: relevantNode as ESTree.Node,
+            messageId,
+          });
+        }
+      }
     },
   };
 }
