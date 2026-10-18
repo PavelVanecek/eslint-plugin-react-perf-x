@@ -108,3 +108,12 @@ describe("rule docs", () => {
     });
   }
 });
+
+describe("all rules should declare complete metadata", () => {
+  for (const [ruleName, rule] of Object.entries(plugin.rules)) {
+    it(`${ruleName} should declare meta.type and messages`, () => {
+      assert.equal(rule.meta?.type, "suggestion");
+      assert(rule.meta?.messages && Object.keys(rule.meta.messages).length > 0);
+    });
+  }
+});

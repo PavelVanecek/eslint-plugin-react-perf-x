@@ -1,6 +1,7 @@
 const js = require("@eslint/js");
 const globals = require("globals");
 const tseslint = require("typescript-eslint");
+const eslintPlugin = require("eslint-plugin-eslint-plugin").default;
 const { defineConfig } = require("eslint/config");
 
 const config = defineConfig(
@@ -35,6 +36,14 @@ const config = defineConfig(
       "prefer-template": "error",
       eqeqeq: "error"
     }
+  },
+  {
+    ...eslintPlugin.configs["rules-recommended"],
+    files: ["src/rules/**/*.ts"]
+  },
+  {
+    ...eslintPlugin.configs["tests-recommended"],
+    files: ["tests/lib/**/*.mts"]
   },
   {
     files: ["tests/**/*.mts"],
